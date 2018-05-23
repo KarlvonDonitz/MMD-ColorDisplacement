@@ -1,2 +1,0 @@
-# MMD-ColorDisplacement
-split image
