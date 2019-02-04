@@ -69,13 +69,10 @@ VS_OUTPUT VS_passDraw( float4 Pos : POSITION, float2 Tex : TEXCOORD0 ) {
 
 float4 PS_ColorShift( float2 Tex: TEXCOORD0 ) : COLOR {   
    float threshold = sin(Tex.y*scaling)/100;
-   if (threshold>0) {
-   Tex.x += DisValue;
-   } else {
-   Tex.x -= DisValue;
-   }
+   Tex.x += ((sin(Tex.y*300+time*5)*3+cos(Tex.y*100+time)*2+sin(Tex.y*250+time*5))+3)/scaling;
     return tex2D(ScnSamp,Tex);
 }
+
 
 
 technique ColorShift <
