@@ -27,10 +27,10 @@ static float alpha1 = MaterialDiffuse.a;
 
 float Intensity : CONTROLOBJECT < string name = "(self)"; string item = "Si";>;
 float Frequency : CONTROLOBJECT < string name = "(self)"; string item = "X";>;
-float Value1 : CONTROLOBJECT < string name = "(self)"; string item = "Y";>;
-float Value2 : CONTROLOBJECT < string name = "(self)"; string item = "Z";>;
+float Speed : CONTROLOBJECT < string name = "(self)"; string item = "Y";>;
+float Value1 : CONTROLOBJECT < string name = "(self)"; string item = "Rx";>;
+float Value2 : CONTROLOBJECT < string name = "(self)"; string item = "Ry";>;
 float Block : CONTROLOBJECT < string name = "(self)"; string item = "Tr";>;
-//Block Function didn't finish i will make it later
 float2 ViewportSize : VIEWPORTPIXELSIZE;
 
 static float2 ViewportOffset = (float2(0.5,0.5)/ViewportSize);
@@ -121,12 +121,15 @@ VS_OUTPUT VS_passDraw( float4 Pos : POSITION, float2 Tex : TEXCOORD0 ) {
     return Out;
 }
 
-float4 PS_ColorShift( float2 Tex: TEXCOORD0 ) : COLOR {   
-   Tex.x += lerp(0,Intensity,pnoise(float2(1,Tex.y*Frequency+time),float2(Value1,Value2)));
-    return tex2D(ScnSamp,Tex);
+float4 PS_ColorDispalcement( float2 Tex: TEXCOORD0 ) : COLOR {   
+   double DisplacementValue = lerp(0,Intensity,pnoise(float2(1,Tex.y*Frequency+time*Speed),float2(Value1,Value2)));
+   double BlockDisplacementValue = double(int(DisplacementValue*100))/100;
+   if (Block ==0) {
+   DisplacementValue = BlockDisplacementValue;
+   }
+   Tex.x += DisplacementValue;
+   return tex2D(ScnSamp,Tex);
 }
-
-
 
 technique ColorShift <
     string Script = 
@@ -151,7 +154,7 @@ technique ColorShift <
 > {
     pass ColorShiftPass < string Script= "Draw=Buffer;"; > {
         AlphaBlendEnable = FALSE;
-        VertexShader = compile vs_2_0 VS_passDraw();
-        PixelShader  = compile ps_2_0 PS_ColorShift();
+        VertexShader = compile vs_3_0 VS_passDraw();
+        PixelShader  = compile ps_3_0 PS_ColorDispalcement();
     }
 }
